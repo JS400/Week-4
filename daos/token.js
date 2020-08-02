@@ -10,7 +10,7 @@ module.exports.getTokenForUserId = (userId) => {
 };
 // getUserIdFromToken(tokenString) - should be an async function that returns a userId string using the tokenString to get a Token record
 
-module.exports.getTokenForUserId = (userId) => {
+module.exports.getUserIdFromToken = (userId) => {
   try {
     const user = Token.findOne({ userId }).lean();
 
@@ -21,7 +21,7 @@ module.exports.getTokenForUserId = (userId) => {
 };
 
 // removeToken(tokenString) - an async function that deletes the corresponding Token record
-module.exports.getTokenForUserId = (userId) => {
+module.exports.removeToken = (userId) => {
   try {
     return Token.deleteOne({ userId }).lean();
   } catch (e) {

@@ -41,7 +41,7 @@ router.post("/", async (req, res, next) => {
 // POST /password - If the user is logged in, store the incoming password using their userId
 router.post("/password", async (req, res, next) => {
   const { bearer } = req.headers.authorization
-  const { user } = req.body
+  if (!bearer) { res.status(401) }
 
   try {
 
@@ -58,7 +58,9 @@ router.post("/password", async (req, res, next) => {
 // POST /logout - If the user is logged in, invalidate their token so they can't use it again (remove it)
 router.post("/logout", async (req, res, next) => {
   const { bearer } = req.headers.authorization
+  if (!bearer) { res.status(401) }
 
+  
   try {
     
    
