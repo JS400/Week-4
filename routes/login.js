@@ -31,7 +31,7 @@ router.post("/", async (req, res, next) => {
       const token = await userDAO.assignToken(storedUser._id);
       return res.json(token);
     } else {
-      return res.json("Invalid Login");
+      return res.status(401);
     }
   } catch (e) {
     next(e);

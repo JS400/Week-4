@@ -3,6 +3,8 @@ const Note = require("../models/note");
 // createNote(userId, noteObj) - should create a note for the given user
 module.exports.createNote = (userId, noteObj) => {
     try {
+
+      const note = await Note.findOne({ userId }).lean();
       return Note.create(userId, noteObj);
     } catch (e) {
       next(e);
@@ -11,9 +13,12 @@ module.exports.createNote = (userId, noteObj) => {
 
 // getNote(userId, noteId) - should get note for userId and noteId (_id)
 
-module.exports.getNote = (userId, noteId) => {
+module.exports.getNote(userId, noteId) => {
     try {
-      return Note.findOne({ userId, noteId }).lean();
+
+      const note = Note.findOne({ userId }).lean();
+      return note.nodeId
+
     } catch (e) {
       next(e);
     }
