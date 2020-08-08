@@ -5,6 +5,6 @@ const tokenSchema = new mongoose.Schema({
   token: { type: String, index: true, required: true },
 });
 
-tokenSchema.index({ title: "text", userId: "text" });
+tokenSchema.index({ title: "text", userId: "text", token: "text" });
 
 module.exports = mongoose.model("token", tokenSchema);

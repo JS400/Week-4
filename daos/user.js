@@ -9,16 +9,10 @@ module.exports.create = async (user) => {
   return await User.create(user);
 };
 
-module.exports.findEmail = async (email) => {
-  const user = await User.findOne({ email });
-
-  if (user) {
-    return user;
-  } else {
-    return false;
-  }
+module.exports.findByEmail = async (email) => {
+ return await User.findOne({ email: email }).lean();
 };
 
 module.exports.updatePassword = async (user) => {
-  return await User.update(user);
+  return await User.updateOne(user);
 };
