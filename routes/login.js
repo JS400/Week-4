@@ -6,36 +6,33 @@ const tokenDAO = require("../daos/token");
 
 const { v4: uuidv4 } = require("uuid");
 
-// Create
-router.post("/signup", async (req, res, next) => {
-  try {
-    const user = req.body;
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json('Incomplete Request');
-    }
-
-    let userExists = userDAO.findEmail(email);
-
-    if (!userExists._id) {
-      user.password = await bcrypt.hash(user.password, 1);
-      const createdUser = await userDAO.create(user);
-      return res.json(createdUser);
+const isLoggedIn = async (req, res, next) => {
+  const { authorization } = req.headers;
+  if (authorization) {
+    const token = authorization.split(" ")[1];
+    if (token) {
+      req.token = token;
+      const userId = await tokenDAO.findTokenByUser(token);
+      if (userId) {
+        req.userId = userId;
+        next();
+      } else {
+        res.sendStatus(401);
+      }
     } else {
-      return createdUser;
+      res.sendStatus(401);
     }
-  } catch (e) {
-    next(e);
+  } else {
+    res.sendStatus(401);
   }
-});
+};
 
 router.post("/", async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json('Incomplete Request');
+      return res.status(400).json("Incomplete Request");
     }
 
     const foundUser = await userDAO.findEmail(email);
@@ -57,27 +54,64 @@ router.post("/", async (req, res, next) => {
           return res.json(token.token);
         }
       } else {
-        res.status(401).json('Unauthorized');
+        res.sendStatus(401);
       }
     } else {
-      res.status(401).json('Unauthorized');
+      res.sendStatus(401);
     }
   } catch (e) {
-    res.json(e);
+    res.sendStatus(401);
   }
 });
 
-// router.get("/:id", async (req, res, next) => {
-//   try {
-//     const { email } = req.body
+// Create
+router.post("/signup", async (req, res, next) => {
+  try {
+    const user = req.body;
+    const { email, password } = req.body;
 
-//     const foundUser = await userDAO.findEmail(email);
+    if (!email || !password) {
+      res.sendStatus(400);
+    }
 
-//     return foundUser
+    let userExists = await userDAO.findEmail(email);
 
-//   } catch (e) {
-//     next(e);
-//   }
-// });
+    if (userExists) {
+      res.sendStatus(409);
+    } else {
+      user.password = await bcrypt.hash(user.password, 1);
+      res.sendStatus(200).json(user.password);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/password", isLoggedIn, async (req, res, next) => {
+  const { email, password } = req.body;
+
+  let user = await userDAO.findEmail(email);
+
+  if (user) {
+    if (password) {
+      user.password = await bcrypt.hash(user.password, 1);
+      const updatedPassword = await userDAO.updatePassword(user);
+      return res.json(updatedPassword);
+    }
+  }
+});
+
+//Logout
+
+router.post("/logout", isLoggedIn, async (req, res, next) => {
+  const { token } = req.body;
+  const removedToken = await tokenDAO.deleteToken(req.token);
+
+  if (removedToken) {
+    res.statusSend(200);
+  } else {
+    res.statusSend(401);
+  }
+});
 
 module.exports = router;

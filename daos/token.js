@@ -1,10 +1,9 @@
 const Token = require("../models/token");
 
-
 module.exports = {};
 
 module.exports.create = async (token) => {
-    return await Token.create(token);
+  return await Token.create(token);
 };
 
 module.exports.findTokenByUser = async (userId) => {

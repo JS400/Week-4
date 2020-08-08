@@ -20,5 +20,5 @@ module.exports.findEmail = async (email) => {
 };
 
 module.exports.updatePassword = async (user) => {
-  return await User.create(user);
+  return await User.update(user);
 };
